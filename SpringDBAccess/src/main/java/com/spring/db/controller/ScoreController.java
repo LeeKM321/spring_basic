@@ -1,7 +1,10 @@
 package com.spring.db.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +52,14 @@ public class ScoreController {
 		System.out.println("vo: " + vo);
 		service.insertScore(vo);
 		return "score/write-result";
+	}
+	
+	//점수 전체 조회를 처리하는 요청 메서드
+	@GetMapping("/list")
+	public void list(Model model) {
+		System.out.println("/score/list: GET");
+		//List<ScoreVO> list = service.selectAllScores();
+		model.addAttribute("sList", service.selectAllScores());
 	}
 	
 	
