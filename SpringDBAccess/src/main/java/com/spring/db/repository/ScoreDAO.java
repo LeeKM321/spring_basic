@@ -39,8 +39,31 @@ public class ScoreDAO implements IScoreDAO {
 
 	@Override
 	public ScoreVO selectOne(int num) {
-		// TODO Auto-generated method stub
-		return null;
+		String sql = "SELECT * FROM scores WHERE stu_id=?";
+		
+		try {
+			return template.queryForObject(sql, new ScoreMapper(), num);
+		} catch (Exception e) {
+			return null;
+		}
+		
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

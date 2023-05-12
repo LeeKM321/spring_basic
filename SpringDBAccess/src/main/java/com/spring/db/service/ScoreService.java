@@ -35,8 +35,21 @@ public class ScoreService implements IScoreService {
 
 	@Override
 	public ScoreVO selectOne(int num) {
-		// TODO Auto-generated method stub
-		return null;
+		return dao.selectOne(num);
 	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
