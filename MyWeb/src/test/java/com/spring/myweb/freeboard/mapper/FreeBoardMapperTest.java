@@ -1,5 +1,9 @@
 package com.spring.myweb.freeboard.mapper;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +34,7 @@ public class FreeBoardMapperTest {
 		
 		//given: 테스트를 위해 주어질 데이터 (ex: parameter)
 		FreeBoardVO vo = new FreeBoardVO();
-		vo.setTitle("첫번째 글");
+//		vo.setTitle("첫번째 글");
 		vo.setWriter("abc1234");
 		vo.setContent("안녕하세요~ 반갑습니다!");
 		
@@ -40,6 +44,27 @@ public class FreeBoardMapperTest {
 		//then: 테스트 결과를 확인.
 		
 	}
+	
+	@Test
+	@DisplayName("전체 글 목록을 조회하고, 조회된 글 갯수를 파악했을 때 하나가 조회될 것이다.")
+	void getListTest() {
+		
+		List<FreeBoardVO> list = mapper.getList();
+		
+		/*
+		for(FreeBoardVO vo : list) {
+			System.out.println(vo);
+		}
+		*/
+		
+		list.forEach(vo -> System.out.println(vo));
+		
+		assertEquals(1, list.size());
+		
+	}
+	
+	
+	
 	
 }
 
