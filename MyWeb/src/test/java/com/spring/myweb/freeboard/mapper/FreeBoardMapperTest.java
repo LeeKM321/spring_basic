@@ -114,8 +114,7 @@ public class FreeBoardMapperTest {
 		
 		//then
 		assertEquals(1, mapper.getList().size());
-		assertNull(mapper.getContent(bno));
-		
+		assertNull(mapper.getContent(bno));	
 	}
 	
 	
