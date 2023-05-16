@@ -1,5 +1,11 @@
 ﻿<%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+    
+    <%@ include file="../include/header.jsp" %>
+    
+    
     <section>
         <div class="container-fluid">
             <div class="row">
@@ -35,27 +41,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td><a href="##">첫글</a></td>
-                                <td>홍길순</td>
-                                <td>~~~~~</td>
-                                <td>~~~~~</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td><a href="##">두글</a></td>
-                                <td>홍길순</td>
-                                <td>~~~~~</td>
-                                <td>~~~~~</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td><a href="##">세글</a></td>
-                                <td>홍길순</td>
-                                <td>~~~~~</td>
-                                <td>~~~~~</td>
-                            </tr>
+                            <c:forEach var="vo" items="${boardList}">
+                            	<tr>
+                            		<td>${vo.bno}</td>
+	                            	<td>
+	                            		<a href="${pageContext.request.contextPath}/freeboard/content?bno=${vo.bno}">${vo.title}</a>
+	                            	</td>
+	                            	<td>${vo.writer}</td>
+	                            	<td>
+	                            		<fmt:parseDate value="${vo.regDate}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="parsedDateTime" type="both" />
+	                            		<fmt:formatDate value="${parsedDateTime}" pattern="yyyy년 MM월 dd일 HH시 mm분" />
+	                            	</td>
+	                            	<td>
+	                            		<fmt:parseDate value="${vo.updateDate}" pattern="yyyy-MM-dd'T'HH:mm:ss" var="parsedUpdateTime" type="both" />
+	                            		<fmt:formatDate value="${parsedUpdateTime}" pattern="yyyy년 MM월 dd일 HH시 mm분" />
+	                            	</td>
+                            	</tr>
+                            </c:forEach>
                         </tbody>
                         
                     </table>
@@ -74,7 +76,7 @@
                         <li><a href="#">5</a></li>
                         <li><a href="#">다음</a></li>
                     </ul>
-                    <button type="button" class="btn btn-info">글쓰기</button>
+                    <button type="button" class="btn btn-info" onclick="location.href='${pageContext.request.contextPath}/freeboard/regist'">글쓰기</button>
                     </div>
 		    </form>
 
@@ -82,6 +84,9 @@
             </div>
         </div>
 	</section>
+	
+	
+	<%@ include file="../include/footer.jsp" %>
 
 
 
