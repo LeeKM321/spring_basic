@@ -45,6 +45,7 @@
 	<select id="getTotal" resultType="int">
 		SELECT COUNT(*)
 		FROM freeboard
+		<include refid="search" />
 	</select>
 	
 	<select id="getContent" resultType="board">
