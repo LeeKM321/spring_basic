@@ -56,7 +56,8 @@ public class FreeBoardController {
 	 값을 받아옵니다.
 	 */
 	@GetMapping("/content/{bno}")
-	public String getContent(@PathVariable int bno, Model model) {
+	public String getContent(@PathVariable int bno, @ModelAttribute("p") PageVO vo
+			, Model model) {
 		model.addAttribute("article", service.getContent(bno));
 		return "freeboard/freeDetail";
 	}
