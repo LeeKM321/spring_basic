@@ -114,6 +114,31 @@
 
     <script>
     
+		//아이디 중복 체크
+		document.getElementById('idCheckBtn').onclick = function() {
+
+			const userId = document.getElementById('userId').value;
+			if(userId === '') {
+				alert('아이디는 필수값입니다.');
+				return;
+			}
+
+			//아이디 중복확인 비동기 요청 준비
+			
+
+		}
+
+
+
+
+
+
+
+
+
+
+
+
         /*아이디 형식 검사 스크립트*/
         var id = document.getElementById("userId");
         id.onkeyup = function() {
