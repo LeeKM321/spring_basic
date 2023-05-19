@@ -114,6 +114,8 @@
 
     <script>
     
+		let code = ''; //이메일 전송 인증번호 저장을 위한 변수
+
 		//아이디 중복 체크
 		document.getElementById('idCheckBtn').onclick = function() {
 
@@ -207,10 +209,22 @@
 			const email = document.getElementById('userEmail1').value + document.getElementById('userEmail2').value;
 			console.log('완성된 email: ' + email);
 			fetch('${pageContext.request.contextPath}/user/mailCheck?email=' + email)
-				.then()
+				.then(res => res.text())
+					.then(data => {
+						console.log('인증번호: ' + data);
+						//비활성된 인증번호 입력창을 활성화
+						document.querySelector('.mail-check-input').setAttribute('disabled', false);
+						code = data; //인증번호를 전역변수에 저장.
+						alert('인증번호가 전송되었습니다. 확인 후 입력란에 정확히 입력하세요!');
+					}); //비동기 끝.
+
+		}; //인증번호 이벤트 끝.
+
+		//인증번호 검증
+		//blur -> focus가 벗어나는 경우 발생.
+		document.querySelector('.mail-check-input').onblur = function() {
+			console.log('blur 이벤트 발생 확인!');
 		}
-
-
 
 
 
