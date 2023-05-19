@@ -69,6 +69,12 @@ public class UserController {
 		model.addAttribute("user", service.login(userId, userPw));
 	}
 	
+	//마이페이지 이동 요청
+	@GetMapping("/userMypage")
+	public void userMypage() {
+		
+	}
+	
 	
 	
 }
