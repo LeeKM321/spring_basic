@@ -142,6 +142,8 @@
 
         document.getElementById('replyRegist').onclick = () => {
 
+            console.log('댓글 등록 이벤트 발생!');
+
             const bno = '${article.bno}'; //현재 게시글 번호
             const reply = document.getElementById('reply').value;
             const replyId = document.getElementById('replyId').value;
@@ -159,10 +161,10 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    'bno' : bno,
-                    'reply' : reply,
-                    'replyId' : replyId,
-                    'replyPw' : replyPw
+                    'bno': bno,
+                    'reply': reply,
+                    'replyId': replyId,
+                    'replyPw': replyPw
                 })
             };
 
@@ -174,9 +176,9 @@
                     document.getElementById('replyId').value = '';
                     document.getElementById('replyPw').value = '';
                     //등록 완료 후 댓글 목록 함수를 호출해서 비동기식으로 목록 표현.
-                    getList();
+                    getList(1, true);
                 });
-       
+
         } //댓글 등록 이벤트 끝.
 
 
@@ -190,11 +192,14 @@
             const bno = '${article.bno}'; //게시글 번호
 
             //get방식으로 댓글 목록을 요청(비동기)
-            fetch('${pageContext.request.contextPath}/reply/getList/' + bno + '/' + pageNum)            
+            fetch('${pageContext.request.contextPath}/reply/getList/' + bno + '/' + pageNum)
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                });
+
 
         }
-
-
 
 
 
