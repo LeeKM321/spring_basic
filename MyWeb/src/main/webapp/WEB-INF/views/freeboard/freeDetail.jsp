@@ -117,7 +117,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="btn btn-default pull-right" data-dismiss="modal">닫기</button>
-                <h4 class="modal-title">댓글수정</h4>
+                <h4 class="modal-title">댓글 수정</h4>
             </div>
             <div class="modal-body">
                 <!-- 수정폼 id값을 확인하세요-->
@@ -305,6 +305,8 @@
             //댓글이 여러 개 -> 수정, 삭제가 발생하는 댓글이 몇 번인지도 확인.
             const rno = e.target.getAttribute('href');
             console.log('댓글 번호: ' + rno);
+            //모달 내부에 숨겨진 input 태그에 댓글 번호를 담아주자.
+            document.getElementById('modalRno').value = rno;
 
             const content = e.target.parentNode.nextElementSibling.textContent;
             console.log('댓글 내용: ' + content);
@@ -313,15 +315,70 @@
             //조건문을 작성. (모달 하나로 수정, 삭제를 같이 처리. 그러기 위해 디자인 조정.)
             if(e.target.classList.contains('replyModify')) {
                 //수정 버튼을 눌렀으므로 수정 모달 형식을 꾸며주겠다.
+                document.querySelector('.modal-title').textContent = '댓글 수정';
+                document.getElementById('modalReply').style.display = 'inline'; //댓글창
+                document.getElementById('modalReply').value = content;
+                document.getElementById('modalModBtn').style.display = 'inline';
+                document.getElementById('modalDelBtn').style.display = 'none';
 
+                //제이쿼리를 이용해서 bootstrap 모달을 여는 방법.
                 $('#replyModal').modal('show');
 
             } else {
+                //삭제 버튼을 눌렀으므로 삭제 모달 형식으로 꾸며줌.
+                document.querySelector('.modal-title').textContent = '댓글 삭제';
+                document.getElementById('modalReply').style.display = 'none'; //댓글창
+                document.getElementById('modalModBtn').style.display = 'none';
+                document.getElementById('modalDelBtn').style.display = 'inline';
+                $('#replyModal').modal('show');
+            }
+        }); //수정 or 삭제 버튼 클릭 이벤트 끝.
 
+
+        //수정 처리 함수. (수정 모달을 열어서 수정 내용을 작성 후 수정 버튼을 클릭했을 때)
+        document.getElementById('modalModBtn').onclick = () => {
+
+            const reply = document.getElementById('modalReply').value;
+            const rno = document.getElementById('modalRno').value;
+            const replyPw = document.getElementById('modalPw').value;
+
+            if(reply === '' || replyPw === '') {
+                alert('내용, 비밀번호를 확인하세요!');
+                return;
             }
 
+            //요청에 관련된 정보 객체
+            const reqObj = {
+                method: 'put',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'reply' : reply,
+                    'replyPw' : replyPw
+                })
+            };
 
-        });
+            fetch('${pageContext.request.contextPath}/reply/' + rno, reqObj)
+                .then(res => res.text())
+                .then(data => {
+                    if(data === 'pwFail') {
+                        alert('비밀번호를 확인하세요.');
+                        document.getElementById('modalPw').value = '';
+                        document.getElementById('modalPw').focus();
+                    } else {
+                        alert('정상 수정 되었습니다.');
+                        document.getElementById('modalReply').value = '';
+                        document.getElementById('modalPw').value = '';
+                        //제이쿼리 문법으로 bootstrap 모달 닫아주기
+                        $('#replyModal').modal('hide');
+                        getList(1, true);
+                    }
+                });
+
+        }
+
+
 
 
     } //window.onload
