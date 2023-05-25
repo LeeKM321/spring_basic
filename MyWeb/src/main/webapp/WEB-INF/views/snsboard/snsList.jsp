@@ -233,7 +233,7 @@
 
 
 					<div id="contentDiv">
-						
+
 						<!-- 비동기 방식으로 서버와 통신을 진행한 후
 							목록을 만들어서 붙일 예정. -->
 
@@ -298,12 +298,11 @@
 
 
 	<script>
-
 		//등록하기 버튼 클릭 이벤트
 		document.getElementById('uploadBtn').onclick = () => {
 			regist();
 		}
-	
+
 		//등록을 담당하는 함수
 		function regist() {
 
@@ -314,13 +313,13 @@
 			console.log(userId);
 			console.log(file);
 			//.을 제거한 확장자만 얻어낸 후 그것을 소문자로 일괄 변경
-			file = file.slice(file.indexOf('.')+1).toLowerCase();
+			file = file.slice(file.indexOf('.') + 1).toLowerCase();
 
-			if(file !== 'jpg' && file !== 'png' && file !== 'jpeg' && file !== 'bmp') {
+			if (file !== 'jpg' && file !== 'png' && file !== 'jpeg' && file !== 'bmp') {
 				alert('이미지 파일(jpg, png, jpeg, bmp)만 등록이 가능합니다.');
 				document.getElementById('file').value = '';
 				return;
-			} else if(userId === '') { //세션 데이터 없다? -> 로그인 x
+			} else if (userId === '') { //세션 데이터 없다? -> 로그인 x
 				alert('로그인이 필요한 서비스 입니다.');
 				return;
 			}
@@ -341,7 +340,7 @@
 			// console.log('data[0]: ' + $data[0]);
 
 			console.log($data.files); //파일 태그에 담긴 파일 정보를 확인하는 프로퍼티.
-			console.log($data.files[0]); 
+			console.log($data.files[0]);
 			//사용자가 등록한 최종 파일의 정보
 			//만약 우리가 여러 파일을 하나의 태그로 받을 수 있도록 multiple을 제공했다면
 			//files -> FileList에 여러 파일의 정보가 들어오게 됩니다.
@@ -355,46 +354,49 @@
 
 			//FormData 객체를 보낼 때는 따로 headers 설정을 진행하지 않습니다.
 			fetch('${pageContext.request.contextPath}/snsboard/upload', {
-				method : 'post',
-				body : formData
-			})
-			.then(res => res.text())
-			.then(data => {
-				console.log(data);
-				document.getElementById('file').value = ''; //file input 비우기
-				document.getElementById('content').value = ''; //글 영역 비우기
-				document.querySelector('.fileDiv').style.display = 'none'; //미리보기 감추기
-				getList(1, true); //글 목록 함수 호출
-			});
+					method: 'post',
+					body: formData
+				})
+				.then(res => res.text())
+				.then(data => {
+					console.log(data);
+					document.getElementById('file').value = ''; //file input 비우기
+					document.getElementById('content').value = ''; //글 영역 비우기
+					document.querySelector('.fileDiv').style.display = 'none'; //미리보기 감추기
+					getList(1, true); //글 목록 함수 호출
+				});
 		} //end regist()
 
 		//리스트 작업
 		let str = '';
 		let page = 1;
+		let isFinish = false;
+
 		const $contentDiv = document.getElementById('contentDiv');
 		getList(1, true);
 
 		function getList(page, reset) {
-
+			str = '';
 			console.log('page: ' + page);
 			console.log('reset: ' + reset);
 
 			fetch('${pageContext.request.contextPath}/snsboard/' + page)
-			.then(res => res.json())
-			.then(list => {
-				console.log(list);
-				console.log(list.length);
+				.then(res => res.json())
+				.then(list => {
+					console.log(list);
+					console.log(list.length);
+					if (list.length === 0) isFinish = true;
 
-				if(reset) {
-					while($contentDiv.firstChild) {
-						$contentDiv.firstChild.remove();
+					if (reset) {
+						while ($contentDiv.firstChild) {
+							$contentDiv.firstChild.remove();
+						}
+						page = 1;
 					}
-					page = 1;
-				}
 
-				for(vo of list) {
-					str +=
-					`<div class="title-inner">
+					for (vo of list) {
+						str +=
+							`<div class="title-inner">
 							<!--제목영역-->
 							<div class="profile">
 								<img src="${pageContext.request.contextPath}/img/profile.png">
@@ -422,20 +424,44 @@
 							<a href="` + vo.bno + `"><i class="glyphicon glyphicon-comment"></i>댓글달기</a>
 							<a href="` + vo.bno + `"><i class="glyphicon glyphicon-remove"></i>삭제하기</a>
 						</div>`;
-				}
+					}
 
-				if(!reset) {
-					document.getElementById('contentDiv').insertAdjacentHTML('beforeend', str);
-				} else {
-					document.getElementById('contentDiv').insertAdjacentHTML('afterbegin', str);
-				}
+					if (!reset) {
+						document.getElementById('contentDiv').insertAdjacentHTML('beforeend', str);
+					} else {
+						document.getElementById('contentDiv').insertAdjacentHTML('afterbegin', str);
+					}
 
-				
-			}); //end fetch
+
+				}); //end fetch
 
 		} //end getList()
 
-
+		/*
+		무한 스크롤 페이징
+		모든 게시판에 무한 스크롤 페이징 방식이 어울리는 것은 아닙니다.
+		사용자가 현재 위치를 알기가 힘들고, 원하는 페이지에 도달하기 위해
+		스크롤을 비효율적으로 많이 움직여야 할 수도 있습니다.
+		서비스 하는 형식에 맞는 페이징 방식을 적용하면 됩니다.
+		*/
+		window.onscroll = function () {
+			if (!isFinish) {
+				/*
+				윈도우(device)의 높이와 현재 스크롤 위치 값을 더한 뒤,
+				문서(컨텐츠)의 높이와 비교해서 같아졌다면 로직을 수행.
+				문서 높이 - 브라우저 창 높이 = 스크롤 창의 끝 높이와 같다면 -> 새로운 내용 불러오기!
+				*/
+				if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+					//사용자의 스크롤이 바닥에 닿았을 때, 페이지 변수의 값을 하나 올리고
+					//reset여부는 false를 주셔서 누적해서 계속 불러오시면 되겠습니다.
+					//게시글을 한 번에 몇 개씩 불러 올지는 PageVO의 cpp를 조정하시면 됩니다.
+					console.log('페이징 발동!');
+					getList(++page, false);
+				}
+			} else {
+				console.log('더 이상 불러올 목록이 없어요!');
+			}
+		}
 
 
 
