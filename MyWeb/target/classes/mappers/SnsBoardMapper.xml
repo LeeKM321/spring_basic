@@ -22,6 +22,11 @@
 		SELECT * FROM snsboard
 		WHERE bno = #{bno}
 	</select>
+	
+	<delete id="delete">
+		DELETE FROM snsboard
+		WHERE bno = #{bno}
+	</delete>
 
 </mapper>
 

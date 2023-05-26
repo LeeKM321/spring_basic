@@ -396,14 +396,15 @@
 
 					for (vo of list) {
 						str +=
-							`<div class="title-inner">
+						`<div class="title-inner">
 							<!--제목영역-->
 							<div class="profile">
 								<img src="${pageContext.request.contextPath}/img/profile.png">
 							</div>
 							<div class="title">
 								<p>` + vo.writer + `</p>
-								<small>` + vo.regDate + `</small>
+								<small>` + vo.regDate + `</small> &nbsp;&nbsp;
+								<a id="download" href="${pageContext.request.contextPath}/snsboard/download/` + vo.fileLoca + `/` + vo.fileName +`">이미지 다운로드</a>
 							</div>
 						</div>
 						<div class="content-inner">
@@ -423,7 +424,7 @@
 						<div class="link-inner">
 							<a href="##"><i class="glyphicon glyphicon-thumbs-up"></i>좋아요</a>
 							<a data-bno="` + vo.bno + `" id="comment" href="` + vo.bno + `"><i class="glyphicon glyphicon-comment"></i>댓글달기</a>
-							<a href="` + vo.bno + `"><i class="glyphicon glyphicon-remove"></i>삭제하기</a>
+							<a id="delBtn" href="` + vo.bno + `"><i class="glyphicon glyphicon-remove"></i>삭제하기</a>
 						</div>`;
 					}
 
@@ -444,9 +445,18 @@
 			e.preventDefault(); //a의 고유 기능 중지
 			console.log('target: ' + e.target);
 			
-			if(!e.target.matches('.image-inner img') && !e.target.matches('.link-inner #comment')) {
+			if(!e.target.matches('.image-inner img') 
+				&& !e.target.matches('.link-inner #comment')
+				&& !e.target.matches('.title #download')) {
 				console.log('여기는 이벤트 대상이 아니야!');
 				return;
+			}
+
+			if(e.target.matches('.title #download')) {
+				if(confirm('다운로드를 진행합니다.')) {
+					location.href= e.target.getAttribute('href');
+					return;
+				} else return;	
 			}
 
 			//글 번호 얻기
@@ -475,6 +485,35 @@
 			$('#snsModal').modal('show');
 
 		});
+
+		//삭제 처리
+		//삭제하기 링크를 클릭했을 때 이벤트를 발생 시켜서
+		//비동기 방식으로 삭제를 진행해 주세요. (삭제 버튼은 여러 개 입니다!)
+		//서버쪽에서 권한을 확인 해 주세요. (작성자와 로그인 중인 사용자의 id를 비교해서 일치하는지의 여부)
+		//일치하지 않는다면 문자열 "noAuth" 리턴, 삭제 완료하면 "success" 리턴
+		//url: /snsboard/글번호 method: DELETE
+		document.getElementById('contentDiv').addEventListener('click', e => {
+			e.preventDefault();
+			if(!e.target.matches('.link-inner #delBtn')) return;
+
+			const bno = e.target.getAttribute('href');
+
+			fetch('${pageContext.request.contextPath}/snsboard/' + bno, {
+				method : 'delete'
+			})
+			.then(res => res.text())
+			.then(result => {
+				if(result === 'noAuth') alert('권한이 없습니다!');
+				else if(result === 'fail') alert('관리자에게 문의하세요!');
+				else {
+					alert('게시물이 정상적으로 삭제되었습니다.');
+					getList(1, true); //삭제가 반영된 새로운 글 목록 보여주기.
+				}
+			});
+
+		});	
+
+		
 
 
 
