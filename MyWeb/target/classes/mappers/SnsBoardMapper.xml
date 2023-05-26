@@ -18,6 +18,10 @@
 		LIMIT #{pageStart}, #{cpp}
 	</select>
 
+	<select id="getDetail" resultType="sns">
+		SELECT * FROM snsboard
+		WHERE bno = #{bno}
+	</select>
 
 </mapper>
 
